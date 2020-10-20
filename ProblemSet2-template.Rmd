@@ -1,0 +1,137 @@
+---
+title: "Canada's Population is Getting Older & Canadians are Having Less Children"
+author: "Fernando Sanchez-Avila"
+date: "October 19th, 2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+### tinytex::install_tinytex()
+library(brms)
+library(tidyverse)
+library(tinytex)
+```
+
+
+
+## Abstract
+
+Although Canada is a very spacious country, the population is actually getting older and, at the same time, Canadians are having less children. The mean age of the working population (15 and older) in Canada, presented in a GSS of 2017, is over 52 years old and the mean of total children Canadians are having is 1.6 per family. Furthermore, the age at which Canadians are having children has actually increased compared to past generations. This present situation opens an unknown possible future that Canada has not experienced before.
+
+## Introduction
+
+Canada is one of the largest countries in the world, however, it is not one of the most populated ones. The UN estimated that, as of 2020, Canada has around 37.7 million people. The current situation Canada is experiencing is that the population is actually getting older and, at the same time, Canadians are having less children. Additionally, the age at which Canadians are having children has actually is actually getting higher.
+The combination of these facts creates a present dilemma that the country has not experienced before, what is it going to happen to the public health care and pension plan systems as more people get older, retire and live longer; while less people work and support those systems with their taxes. The rest of the paper will be distributed as the following: the next section will be the data selection, containing important features and potential drawbacks to the data. The next section will introduce the model used. After that, the next section will be on the results of the model followed by a discussion, the weakness of the model as well as the next steps to make. Lastly, the references used will be appended to the paper.
+
+## Data
+
+The data used will be the Canadian General Social Survey GSS of 2017. One of the strengths of the data is that it is a national survey that is distributed to people of ages of 15 and older. Since the purpose of the data is that it is focused on the social survey, then it can represent various present situations of the Canadians. The weakness of the survey, however, can be that it presents (or it is used as) a political strategy to either endorse the party that is currently in power, or endorse the candidate that is in a campaign be elected. This could cause some bias in, for example, the question of the rank of current happiness in life, which is in the survey.
+Lastly, it is important to point out that the data used in the histogram of age of the people in the sample, as well as the histogram of the total children per parent is taken from all the data that was collected from the survey that answered to the question. However, the data used in the calculation of the models (which will be explained in the next section) is only from the people in the survey that are 18 years old or older (thus, adults). This is to maintain an ethical analysis.
+
+
+```{r, echo=FALSE, message=FALSE}
+total_data = read.csv('gss.csv')
+attach(total_data)
+set0 = total_data[age>=18,]
+```
+
+
+
+## Model
+
+
+
+```{r, echo=FALSE, message=FALSE}
+set0 = total_data[age>=18,]
+lmod_age_to_total_children = lm(total_children~age, data=set0)
+```
+
+The model used to evaluate the age of a parent with respect to the total number of children is a simple linear regression. The reason is that the goal is to see whether the age of the parent/parents has a statistical significance with respect to the total number of children the parent has. Furthermore, the data used for that model is actually of people in the survey that are 18 years old or older. The reason for that filter of the data is to take into consideration only adults in the study. 
+
+Therefore, the notation of the model is: y_hat = B0 + B1*(x)
+
+Where B0 is the intercept of the linear regression while B1 is the coefficient of the slope which will translate into the amount of children a parent has as the age of the parent increases (x will be the age of the parent).
+Thus the specific model notation would be: total_children_hat = B0 + (B1*age)
+
+
+
+```{r, echo=FALSE, message=FALSE}
+set0 = total_data[age>=18,]
+lmod_age_to_first_birth = lm(age_at_first_birth~age, data=set0)
+```
+
+The model used to evaluate the age of a parent with respect to the age the parent was when the first child was born is a simple linear regression as well. The reason is that the goal is to see whether the age of the parent/parents has a statistical significance with respect to the age the parent was when the first child was born. This model would therefore let us see whether the person that is now older had the first born child at the same age as a person who is now younger. Furthermore, the data used for that model is, again, of people in the survey that are 18 years old or older (thus, adults). The reason for that filter of the data is to take into consideration only adults in the study. 
+
+Therefore, the notation of the model is: y_hat = B0 + B1*(x)
+
+Where B0 is the intercept of the linear regression while B1 is the coefficient of the slope which will translate into the amount of children a parent has as the age of the parent increases (x will be the age of the parent). 
+Thus the specific model notation would be: age_at_first_birth_hat = B0 + (B1*age)
+
+
+
+
+
+## Results
+
+
+```{r, echo=FALSE, message=FALSE}
+summary(age)
+summary(total_children)
+hist(age, main='Histogram of Age - Figure(1)', xlab = 'Age in years')
+hist(total_children, main='Histogram of Total Children per Parent/Parents - Figure(2)', xlab='Total Children per Parent/Parents')
+```
+
+In these first results, the top of the line in the summary presents the distribution of the age of the people in the sample. As it can be seen, the median is of 54.20 years old while the mean is 52.19 years of age. Furthermore, the second line presents the distribution of the total amount of children that the people in the sample have. The median was 2 while the mean was 1.679.
+In terms of the histogram of age (figure 1), it can be seen that the number of people from 50 to 80 years old is much higher than the number of people with 20 to 50 years of age.
+Lastly, in the histogram of total children per parent/parents (figure 2), it can be seen that it is rightly skewed with most of the data being between zero and two.
+
+
+```{r, echo=FALSE, message=FALSE}
+summary(lmod_age_to_total_children)
+plot(set0$age, set0$total_children, main='Regression of Age to Total Children per Parent(s) - Figure(3)', 
+      xlab='Age of Parent in years', ylab='Total Children per Parent(s)')
+abline(lsfit(set0$age,set0$total_children))
+```
+
+After the model was done, the results of the regression of age of the parent(s) to the total number of children per parent(s) were that the linear regression equation is: 
+total_children_hat = -0.2215142 + 0.0365641*(age).
+
+Therefore, this means that a parent that is one year older would have 0.03656 more children. This can be seen in the plot of the linear regression (figure 3) where there is an increase on the total children per parent(s) as the parents are older. Thus translating into the fact that older people have more children than younger people.
+Lastly, the results are highly statistically significant, as it can be seen in the p-values being significant even below the 1% significance test.
+
+
+
+```{r, echo=FALSE, message=FALSE}
+summary(lmod_age_to_first_birth)
+plot(set0$age, set0$age_at_first_birth, main = 'Regression of Age of Parent to 
+     Age of Parent When First Born Child - Figure(4)',
+     xlab = 'Age of Parent in Years', ylab = 'Age of Parent When First Born Child')
+abline(lsfit(set0$age,set0$age_at_first_birth))
+```
+
+After the model was done, the results of the regression of age of the parent to the age of the parent when the first born child were that the linear regression equation is: 
+age_at_first_birth_hat = 30.637753 - 0.065853*(age).
+Therefore, this mean that the older the parent (higher the age), the younger the parent was when the first child was born.
+Thus, this would translate, as it can be seen in the plot of the regression (figure 4), that parents that are now older had children when they were younger than younger generations that are having children when they are older.
+
+
+
+## Discussion
+
+As it can be seen from the results above, the estimated mean and median of the age of the population in Canada is high. Furthermore, the younger generation of adults (less than 40 years old) have less children than the older generations had and, additionally, are taking longer time (waiting to be older) to have their children, if they desire to have any. 
+This situation is currently creating a dilemma that the country has not experienced before, and seems to not know what the effect would be. The question of what is it going to happen to the public health care and pension plan systems as more people get older, retire and live longer, while less people work and support those systems with their taxes seems to be, at the moment, a situation that has not been addressed.
+
+# Weaknesses and Next Steps
+
+One of the weaknesses of the study is that it only takes into account the current people that live in Canada and does not (and actually cannot) take into account of potential migrating individuals, which Canada has every year. This could change results when it comes to the amount of children Canadians have. For example, if Canadians usually have a certain amount of kids but immigrants have more, then it could alter the data since every year there are various immigrants that Canada receives with open arms. 
+In this case the next steps could be to ask whether the person was born in Canada, if not, then the age when that person moved in and the amount of children (if applicable) that moved in with the person.
+Secondly, when it comes to the dilemma of the future of the public health and pension plan systems due to the decrease of children per parent(s) in younger adults generations, another step to take would be to see whether the people companies in Canada employ where born in Canada. This would change the dilemma since Canada could be able to sustain the health and pension plan systems if they also hire people that were born in another country and came to Canada to work or study and then work.
+
+
+
+## References
+
+General social survey on Family (cycle 31), 2017
+
+
